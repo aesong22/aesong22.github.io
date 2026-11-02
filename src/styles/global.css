@@ -30,6 +30,7 @@ main{flex:1}
 .logo{font-weight:900;font-size:26px;letter-spacing:-.03em;border:2px solid var(--ink);padding:4px 14px;background:#fff;transform:rotate(-2deg);display:inline-block;text-decoration:none}
 .site-nav{display:flex;gap:36px;font-size:17px}
 .site-nav a{text-decoration:underline wavy #9bb36a;text-underline-offset:6px}
+.site-nav .ext{margin-left:5px;vertical-align:1px;color:var(--ink-mute)}
 .site-nav b{font-weight:800;color:var(--accent);margin-right:6px;font-size:13px;letter-spacing:.1em}
 
 /* 홈 히어로 */

@@ -24,7 +24,9 @@ const pageTitle = title ? `${title} | aesong22` : 'aesong22';
       <nav class="site-nav">
         <a href={url('/#projects')}><b>01</b>프로젝트</a>
         <a href={url('/about/')}><b>02</b>소개</a>
-        <a href="https://github.com/aesong22" target="_blank" rel="noopener noreferrer"><b>03</b>GitHub</a>
+        <a href="https://github.com/aesong22" target="_blank" rel="noopener noreferrer" aria-label="GitHub, 새 탭에서 열림">
+          <b>03</b>GitHub<svg class="ext" viewBox="0 0 12 12" width="11" height="11" aria-hidden="true" focusable="false"><path d="M3 9L9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+        </a>
       </nav>
     </header>
     <main>
