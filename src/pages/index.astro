@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Stage from '../components/Stage.astro';
+import { articleSlug } from '../lib/meta';
+import { url } from '../lib/url';
+
+const projects = (await getCollection('projects', (p) => !p.data.hidden)).sort((a, b) => a.data.order - b.data.order);
+const articles = (await getCollection('articles', (a) => a.data.status === 'published')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const byProject = (id: string) => articles.filter((a) => a.data.project.id === id);
+---
+<Base>
+  <section class="hero wrap">
+    <div>
+      <div class="kicker up">Project archive</div>
+      <h1 class="title">불편해서 <b>만들고</b>,<br />써 보면서 <em>고친</em> 것들</h1>
+    </div>
+    <div class="hero-r">
+      <div class="stats">
+        <div><strong>{String(projects.length).padStart(2, '0')}<small>개</small></strong><span class="up">Projects</span></div>
+        <div><strong>{String(articles.length).padStart(2, '0')}<small>편</small></strong><span class="up">Notes</span></div>
+      </div>
+      <div class="how">
+        <span class="up">만든 방식</span>
+        자연어로 요구사항을 정리하고 AI와 구현했다. 직접 사용하면서 결과를 검토하고 수정 방향을 결정했다.
+      </div>
+    </div>
+  </section>
+
+  <section class="grid wrap" id="projects">
+    {projects.map((p, i) => {
+      const list = byProject(p.id);
+      return (
+        <a class="card" href={url(`/projects/${p.id}/`)} style={`--c:${p.data.color}`}>
+          <div class="plat up">{p.data.platform}</div>
+          <div class="num">{String(i + 1).padStart(2, '0')}</div>
+          <div class="name">{p.data.name}</div>
+          <div class="one">{p.data.tagline}</div>
+          <div class="why">{p.data.why}</div>
+          <Stage stage={p.data.stage} />
+          <div class="meta"><span class="share">{p.data.share}</span>{p.data.note}</div>
+          <div class="tags">{p.data.tech.join(' / ')}</div>
+          <div class="arts">
+            <div class="up">Notes {list.length}</div>
+            <ul>
+              {list.slice(0, 3).map((a, k) => (
+                <li><i>{String(k + 1).padStart(2, '0')}</i><em>{a.data.title}</em></li>
+              ))}
+            </ul>
+          </div>
+        </a>
+      );
+    })}
+  </section>
+
+  <section class="legend wrap">
+    <div><span class="up">단계</span>구상, 제작 중, 검증 중, 사용 중 (이 4개 안에서만 이동)</div>
+    <div><span class="up">공유 범위</span>나만, 소수 공유, 공개</div>
+  </section>
+</Base>

@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = '일상과 일에서 반복되는 불편을 말로 정리하고, AI와 함께 작은 앱으로 만든 기록.' } = Astro.props;
+const pageTitle = title ? `${title} | aesong22` : 'aesong22';
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  </head>
+  <body>
+    <header class="site-header wrap">
+      <a class="logo" href={url('/')}>aesong22</a>
+      <nav class="site-nav">
+        <a href={url('/#projects')}><b>01</b>프로젝트</a>
+        <a href={url('/about/')}><b>02</b>소개</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer wrap">aesong22 / 2026</footer>
+  </body>
+</html>

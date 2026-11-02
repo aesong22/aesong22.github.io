@@ -1,0 +1,15 @@
+---
+import { STAGES, stageIndex, type Stage } from '../lib/meta';
+
+interface Props {
+  stage: Stage;
+}
+const { stage } = Astro.props;
+const cur = stageIndex(stage);
+---
+<div class="stage">
+  <div class="cap up"><span>Stage</span><b>{stage}</b></div>
+  <div class="steps">
+    {STAGES.map((s, i) => <span class={i === cur ? 'on' : i < cur ? 'past' : ''}>{s}</span>)}
+  </div>
+</div>

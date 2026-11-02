@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Stage from '../../../components/Stage.astro';
+import { articleSlug } from '../../../lib/meta';
+import { url } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', (p) => !p.data.hidden);
+  return projects.map((p) => ({ params: { project: p.id }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const articles = (
+  await getCollection('articles', (a) => a.data.status === 'published' && a.data.project.id === project.id)
+).sort((a, b) => a.data.order - b.data.order);
+const d = project.data;
+---
+<Base title={d.name} description={d.tagline}>
+  <section class="p-head wrap" style={`--c:${d.color}`}>
+    <div class="crumb"><a href={url('/')}>aesong22</a> / 프로젝트</div>
+    <div class="p-plat up">{d.platform}</div>
+    <h1 class="p-name">{d.name}</h1>
+    <p class="p-tag">{d.tagline}</p>
+  </section>
+
+  <section class="p-body wrap" style={`--c:${d.color}`}>
+    <div>
+      <div class="box">
+        <h2>만들게 된 계기</h2>
+        <Content />
+      </div>
+      <div class="box">
+        <h2>현재 상태</h2>
+        <Stage stage={d.stage} />
+        <div class="meta"><span class="share">{d.share}</span>{d.note}</div>
+      </div>
+    </div>
+    <div>
+      <div class="box">
+        <h2>플랫폼과 기술</h2>
+        <p style="margin-bottom:14px">{d.platform}</p>
+        <div class="tech">{d.tech.map((t) => <span>{t}</span>)}</div>
+      </div>
+      <div class="box">
+        <h2>관련 글 {articles.length}편</h2>
+        {articles.length === 0 ? (
+          <p>아직 공개한 글이 없습니다.</p>
+        ) : (
+          <ul class="alist">
+            {articles.map((a, i) => (
+              <li>
+                <a href={url(`/projects/${project.id}/${articleSlug(a.id)}/`)}>
+                  <i>{String(i + 1).padStart(2, '0')}</i>
+                  <div>
+                    <strong>{a.data.title}</strong>
+                    <span>{a.data.description}</span>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>

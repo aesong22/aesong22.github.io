@@ -1,0 +1,61 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import { articleSlug } from '../../../lib/meta';
+import { url } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('articles', (a) => a.data.status === 'published')).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  return all.map((a) => {
+    const same = all.filter((x) => x.data.project.id === a.data.project.id);
+    const i = same.findIndex((x) => x.id === a.id);
+    return {
+      params: { project: a.data.project.id, slug: articleSlug(a.id) },
+      props: { article: a, prev: same[i - 1], next: same[i + 1] },
+    };
+  });
+}
+
+const { article, prev, next } = Astro.props;
+const project = await getEntry(article.data.project);
+const { Content } = await render(article);
+const d = article.data;
+const date = d.pubDate.toISOString().slice(0, 10);
+const href = (a: typeof article) => url(`/projects/${a.data.project.id}/${articleSlug(a.id)}/`);
+---
+<Base title={d.title} description={d.description}>
+  <header class="wrap" style={`--c:${project.data.color}`}>
+    <div class="a-head">
+      <div class="crumb">
+        <a href={url('/')}>aesong22</a> /{' '}
+        <a href={project.data.hidden ? url('/about/') : url(`/projects/${project.id}/`)}>
+          {project.data.hidden ? '만드는 방식' : project.data.name}
+        </a>
+      </div>
+      <h1 class="a-title">{d.title}</h1>
+      <p class="a-desc">{d.description}</p>
+      <div class="a-date up">{date}</div>
+    </div>
+  </header>
+
+  <article class="wrap">
+    <div class="prose"><Content /></div>
+    {(d.madeBy || d.external) && (
+      <div class="made">
+        <span class="up">만든 방식</span>
+        {d.madeBy}
+        {d.external && <> 외부 자료: {d.external}.</>}
+      </div>
+    )}
+    <nav class="pn">
+      {prev ? (
+        <a href={href(prev)}><span class="up">이전 글</span><strong>{prev.data.title}</strong></a>
+      ) : <div></div>}
+      {next ? (
+        <a class="next" href={href(next)}><span class="up">다음 글</span><strong>{next.data.title}</strong></a>
+      ) : <div></div>}
+    </nav>
+  </article>
+</Base>
